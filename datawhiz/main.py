@@ -1,16 +1,15 @@
+# datawhiz/main.py
+
 from fastapi import FastAPI
+from datawhiz.db import engine, Base
 
-app = FastAPI(title= 'DataWhiz - Minimal')
+app = FastAPI(title="DataWhiz")
 
-@app.get('/')
+@app.on_event("startup")
+async def startup_event():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+@app.get("/")
 async def root():
-    return {"message": "Welcome to Datawhiz"}
-
-@app.get('/health')
-async def health():
-    """
-        Health check endpoint.
-        Returns basic status to verify the app is running.
-        """
-    return {"status": "ok"}
-
+    return {"message": "DataWhiz backend is running successfully 🚀"}
