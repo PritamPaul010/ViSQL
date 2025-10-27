@@ -31,30 +31,30 @@ async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_d
     new_user = await crud.create_user(db, user)
     return new_user
 
-@app.get("/users/", response_model= schemas.User)
+@app.get("/users/", response_model= list[schemas.User])
 async def read_users(skip: int= 0, limit: int = 10, db: AsyncSession = Depends(get_db)):
     users = await crud.get_users(db, skip, limit)
     return users
 
 @app.get("/users/{user_id}", response_model= schemas.User)
 async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
-    db_user = await crud.get_users(db, user_id = user_id)
+    db_user = await crud.get_user(db, user_id = user_id)
     if db_user is None:
-        return HTTPException(status_code=404, detail=f'User with user id ({user_id}) Not Found!')
+        raise HTTPException(status_code=404, detail=f'User with user id ({user_id}) Not Found!')
     return db_user
 
 @app.put("/users/{user_id}", response_model= schemas.User)
 async def update_user(user_id: int, user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
-    updated_user = crud.update_user(db, user_id, user)
+    updated_user = await crud.update_user(db, user_id, user)
     if updated_user is None:
-        return HTTPException(status_code=404, detail=f'User with user id ({user_id}) Not Found!')
+        raise HTTPException(status_code=404, detail=f'User with user id ({user_id}) Not Found!')
     return updated_user
 
 @app.delete("/users/{user_id}")
 async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
-    deleted_user = crud.delete_user(db, user_id)
+    deleted_user = await crud.delete_user(db, user_id)
     if deleted_user is None:
-        return HTTPException(status_code=404, detail= f'User with user id ({user_id}) Not Found!')
+        raise HTTPException(status_code=404, detail= f'User with user id ({user_id}) Not Found!')
     return {'message': f'User with user id ({user_id}) Deleted Successfully!'}
 
 

@@ -16,4 +16,4 @@ class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True # Will allow returning SQLAlchemy models directly
+        from_attributes = True # Will allow returning SQLAlchemy models directly #Pydantic v1 takes orm_mode and v2 takes from_attributes
