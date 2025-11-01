@@ -8,8 +8,8 @@ class UserBase(BaseModel):
 
 #Schema for creating users
 class UserCreate(UserBase):
-    pass #This will inherit name and email from UserBase
-
+    # pass #This will inherit name and email from UserBase
+    password: str
 
 #Schema for reading user with ID (responsee)
 class User(UserBase):

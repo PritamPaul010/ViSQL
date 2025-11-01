@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from fastapi import HTTPException
 from . import models,schemas
+from .auth.hashing import hash_password
 
 
 #Create
@@ -12,7 +13,7 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
         raise HTTPException(status_code=400, detail= "Email is already registered!")
 
 
-    new_user = models.User(name= user.name, email= user.email)
+    new_user = models.User(name= user.name, email= user.email, password = hash_password(user.password))
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)

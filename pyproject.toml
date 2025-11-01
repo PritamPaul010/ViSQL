@@ -17,6 +17,12 @@ sqlalchemy = {extras = ["asyncio"], version = "^2.0.44"}
 asyncpg = "^0.30.0"
 aiosqlite = "^0.21.0"
 pydantic = {extras = ["email"], version = "^2.12.3"}
+passlib = {extras = ["argon2"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.5.0"}
+bcrypt = "<4.0"
+argon2-cffi = "^25.1.0"
+python-multipart = "^0.0.20"
+python-dotenv = "^1.2.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
