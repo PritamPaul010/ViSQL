@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from . import models, schemas, crud
+from .auth import auth
 from .db import engine, Base, get_db
 
 app = FastAPI(title="DataWhiz")
@@ -56,6 +57,12 @@ async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
     if deleted_user is None:
         raise HTTPException(status_code=404, detail= f'User with user id ({user_id}) Not Found!')
     return {'message': f'User with user id ({user_id}) Deleted Successfully!'}
+
+
+@app.post("/login", response_model=schemas.TokenResponse)
+async def login_user(login_data: schemas.LoginRequest, db: AsyncSession = Depends(get_db)):
+    token = await auth.authenticate_user(login_data.email, login_data.password, db)
+    return {'access_token': token, "token_type": 'bearer'}
 
 
 
