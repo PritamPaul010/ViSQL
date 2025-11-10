@@ -7,7 +7,6 @@ from .auth.hashing import hash_password, verify_password
 from .auth.dependencies import get_current_user
 
 
-
 #Create
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
     result = await db.execute(select(models.User).where(models.User.email == user.email))
@@ -63,6 +62,7 @@ async def update_user_password(db: AsyncSession, user_id: int, current_password:
     await db.commit()
     await db.refresh(existing_user)
     return existing_user
+
 
 
 

@@ -34,6 +34,7 @@ class TokenResponse(BaseModel):
     access_token : str
     token_type : str = 'bearer'
 
+
 class PasswordUpdateRequest(BaseModel):
     current_password: str
     new_password: str

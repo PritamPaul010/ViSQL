@@ -2,11 +2,11 @@ from datetime import datetime, timedelta, UTC, timezone
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 
-from datawhiz.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from datawhiz.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, RESET_TOKEN_EXPIRE_MINUTES
 
 
 # Create JWT Access Token
-def create_access_token(data: dict):
+def create_token(data: dict, type: str = 'access'):
     """
     Generates a JWT Token using the provided user data
     :param data:
@@ -17,6 +17,8 @@ def create_access_token(data: dict):
     try:
         to_encode = data.copy()
 
+        token_expire_minutes = RESET_TOKEN_EXPIRE_MINUTES if type == 'reset' else ACCESS_TOKEN_EXPIRE_MINUTES
+
         # Define Expiration Time
         expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         to_encode.update({"exp": expire})
@@ -25,7 +27,7 @@ def create_access_token(data: dict):
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
     except Exception as e:
-        print(f'create_access_token error: {e}')
+        print(f'create_token error for type - {type}: {e}')
         raise HTTPException(status_code=500, detail="Internal Server Error: Failed to Create Access Token!")
 
 
@@ -59,5 +61,3 @@ def verify_token(token: str):
             status_code= status.HTTP_401_UNAUTHORIZED,
             detail= "Invalid or expired token!"
         )
-
-

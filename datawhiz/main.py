@@ -86,6 +86,23 @@ async def login_form(form_data: OAuth2PasswordRequestForm = Depends(), db: Async
     return {"access_token": token, "token_type": "bearer"}
 
 
+@app.post("/auth/forget-password")
+async def forget_password(email: str, db: AsyncSession = Depends(get_db)):
+    print(f'forget_password api called for email id: {email}')
+    reset_token = await auth.forgot_password(db, email)
+    if reset_token is None:
+        raise HTTPException(status_code=500, detail=f'Failed to Created Password Reset Token!')
+    return {"reset_token": reset_token, "message": "Password reset token generated successfully!"}
+
+
+
+@app.post("/auth/reset-password", response_model= schemas.MessageResponse)
+async def reset_password(reset_token: str, new_password: str, db: AsyncSession = Depends(get_db)):
+    print(f'reset_password api called!')
+    message = await auth.reset_password(db, reset_token, new_password)
+    return message
+
+
 
 @app.get("/me")
 def get_profile(current_user= Depends(get_current_user)):
