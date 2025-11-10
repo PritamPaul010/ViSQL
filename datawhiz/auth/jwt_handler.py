@@ -14,16 +14,20 @@ def create_access_token(data: dict):
     """
 
     # Copy data to avoid modifying original
-    to_encode = data.copy()
+    try:
+        to_encode = data.copy()
 
-    # Define Expiration Time
-    expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+        # Define Expiration Time
+        expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode.update({"exp": expire})
 
-    # Encode the token using SECRET_KEY and algorithm
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        # Encode the token using SECRET_KEY and algorithm
+        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        return encoded_jwt
+    except Exception as e:
+        print(f'create_access_token error: {e}')
+        raise HTTPException(status_code=500, detail="Internal Server Error: Failed to Create Access Token!")
 
-    return encoded_jwt
 
 # Decode token
 def verify_token(token: str):
