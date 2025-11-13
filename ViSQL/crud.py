@@ -75,7 +75,9 @@ async def delete_user(db:AsyncSession, user_id: int):
     if existing_user is None:
         return None
 
-    await db.delete(existing_user)
+    existing_user.is_deleted = True
+
+    # await db.delete(existing_user)
     await db.commit()
     return existing_user
 

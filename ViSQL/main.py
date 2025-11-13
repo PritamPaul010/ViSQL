@@ -1,4 +1,4 @@
-# datawhiz/main.py
+# ViSQL/main.py
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.params import Depends
@@ -8,11 +8,11 @@ from typing import List
 
 from . import models, schemas, crud
 from .auth import auth
-from .auth.dependencies import get_current_user
+from .auth.dependencies import get_current_user, get_current_admin
 from .db import engine, Base, get_db
 from .models import RoleEnum
 
-app = FastAPI(title="DataWhiz")
+app = FastAPI(title="ViSQL")
 
 #Create Tables on Startup (Runs once)
 @app.on_event("startup")
@@ -22,11 +22,18 @@ async def startup_event():
 
 @app.get("/")
 async def root():
-    return {"message": "DataWhiz backend is running successfully 🚀"}
+    return {"message": "ViSQL backend is running successfully 🚀"}
 
 @app.get('/health')
 async def check_health():
     return {"status": "ok"}
+
+## Admin CRUD Endpoints
+@app.get("/users/all", response_model= list[schemas.User])
+async def read_users(skip: int= 0, limit: int = 10, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    users = await crud.get_users(db, skip, limit)
+    return users
+
 
 ## User CRUD Endpoints
 
@@ -34,15 +41,6 @@ async def check_health():
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     new_user = await crud.create_user(db, user)
     return new_user
-
-@app.get("/users/all", response_model= list[schemas.User])
-async def read_users(skip: int= 0, limit: int = 10, db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
-    print('Current User: ', current_user)
-    print('Current User Role: ', current_user.role)
-    if current_user.role != RoleEnum.admin:
-        raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED, detail= "You do not have the permission required to see all users!")
-    users = await crud.get_users(db, skip, limit)
-    return users
 
 @app.get("/users/me/info", response_model= schemas.User)
 async def read_user(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
@@ -66,8 +64,8 @@ async def update_user_password(req: schemas.PasswordUpdateRequest, db: AsyncSess
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= f"User Not found!")
     return {"message": "Password Reset Successfully!"}
 
-@app.delete("/users/me")
-async def delete_user(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+@app.delete("/users/me/remove")
+async def delete_user(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
     deleted_user = await crud.delete_user(db, current_user.id)
     if deleted_user is None:
         raise HTTPException(status_code=404, detail= f'User with user id ({current_user.id}) Not Found!')

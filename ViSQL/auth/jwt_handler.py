@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, UTC, timezone
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 
-from datawhiz.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, RESET_TOKEN_EXPIRE_MINUTES
+from ViSQL.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, RESET_TOKEN_EXPIRE_MINUTES
 
 
 # Create JWT Access Token

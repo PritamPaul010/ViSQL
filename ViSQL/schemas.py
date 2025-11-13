@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-from datawhiz.models import RoleEnum
+from ViSQL.models import RoleEnum
 
 
 # Schema for reading user data
